@@ -1,25 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import HomePage from './components/HomePage';
+import UserDetails from './components/UserDetails';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App = () => {
+	const [users, setUsers] = useState();
+
+	useEffect(() => {
+		const getUsers = async () => {
+			const usersFromServer = await fetchUsers();
+			// Save users to state
+			setUsers(usersFromServer);
+		};
+
+		getUsers();
+	}, []);
+
+	// Fetch Users
+	const fetchUsers = async () => {
+		const res = await fetch('https://jsonplaceholder.typicode.com/users');
+		const data = await res.json();
+
+		return data;
+	};
+
+	return (
+		<Router>
+			<div className='container'>
+				<Switch>
+					<Route path='/' exact>
+						<HomePage users={users} />
+					</Route>
+					<Route exact path='/userdetails/:id' component={UserDetails} />
+				</Switch>
+			</div>
+		</Router>
+	);
+};
 
 export default App;
